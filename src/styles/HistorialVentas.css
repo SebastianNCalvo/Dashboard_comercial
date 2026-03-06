@@ -1,0 +1,268 @@
+/* --- 1. CONTENEDOR Y BALANCE --- */
+.historial-container-nuevo {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.dashboard-balance {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+  margin-bottom: 25px;
+}
+
+.card-balance-n {
+  background: white;
+  padding: 15px;
+  border-radius: 20px;
+  text-align: center;
+  border: 2.5px solid #37474f;
+  box-shadow: 4px 4px 0px #37474f;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.card-balance-n:active { transform: scale(0.95); }
+
+.card-balance-n.activa {
+  background: #fffdf7;
+  border-color: #f06292;
+  box-shadow: 4px 4px 0px #f06292;
+}
+
+.card-balance-n small {
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: #37474f;
+}
+
+.card-balance-n span {
+  font-size: 1.2rem;
+  font-weight: 900;
+}
+
+.ingresos span { color: #0288d1; }
+.egresos span { color: #d81b60; }
+.resultado.positivo { background: #e1f5fe; }
+.resultado.negativo { background: #fce4ec; }
+.cortesia span { color: #e67e22; }
+
+/* --- 2. FILTROS --- */
+.historial-filtros-n {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 25px;
+  background: #fdfbff;
+  padding: 15px;
+  border-radius: 22px;
+  border: 2.5px solid #37474f;
+}
+
+.input-filtro-historial {
+  padding: 12px;
+  border-radius: 12px;
+  border: 2.5px solid #37474f;
+  font-family: inherit;
+  font-weight: 700;
+  outline: none;
+  background: white;
+  color: #37474f;
+}
+
+.selects-filtros-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.selects-filtros-row select {
+  padding: 10px;
+  border-radius: 12px;
+  border: 2.5px solid #37474f;
+  font-weight: 800;
+  font-size: 0.85rem;
+  background: white;
+  color: #37474f;
+  outline: none;
+  appearance: none;
+}
+
+/* --- 3. TABLAS Y CARDS --- */
+.tabla-historial-wrapper {
+  background: transparent;
+  margin-bottom: 25px;
+}
+
+.titulo-tabla {
+  font-size: 1.1rem;
+  font-weight: 900;
+  margin-bottom: 15px;
+  padding-left: 10px;
+  border-left: 6px solid #f06292;
+  color: #37474f;
+}
+
+.tabla-historial {
+  width: 100%;
+  border-collapse: collapse; 
+}
+
+/* --- 4. LISTA DE PRODUCTOS --- */
+.item-producto-historial {
+  display: inline-block;
+  padding: 4px 8px;
+  margin: 2px 0; 
+  background: #f1f8e9;
+  border-radius: 8px;
+  border: 1px solid #cfd8dc;
+  font-size: 0.85rem;
+}
+
+.prod-nombre { font-weight: 800; color: #37474f; }
+.prod-meta { color: #546e7a; font-weight: 600; font-size: 0.8rem; }
+
+/* Estilos para el Flujo de Cambios (Entra/Sale) */
+.item-flujo {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 4px 0;
+  font-size: 0.85rem;
+}
+.item-flujo.entra { color: #2e7d32; }
+.item-flujo.sale { color: #c62828; }
+
+/* --- 5. BADGES DE PAGO (NUEVO Y RETOCADO) --- */
+.tag-pago {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 10px;
+  border-radius: 10px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  border: 2px solid #37474f;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* Variantes de color para los pagos */
+.tag-pago.efectivo { background: #e8f5e9; color: #2e7d32; }
+.tag-pago.transferencia { background: #e3f2fd; color: #1565c0; }
+.tag-pago.débito, .tag-pago.crédito { background: #f3e5f5; color: #7b1fa2; }
+.tag-pago.cortesia { background: #eee; color: #757575; border-style: dashed; }
+
+/* --- RESPONSIVE CELULARES --- */
+@media (max-width: 768px) {
+  .tabla-historial thead { display: none; }
+
+  .tabla-historial tr {
+    display: block;
+    background: white;
+    padding: 15px;
+    border: 2.5px solid #37474f;
+    border-radius: 20px;
+    box-shadow: 4px 4px 0px #37474f;
+    margin-bottom: 15px;
+  }
+
+  .tabla-historial td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    font-size: 0.9rem;
+    border-bottom: 1px dashed #ddd;
+  }
+
+  .tabla-historial td::before {
+    content: attr(data-label);
+    font-weight: 800;
+    text-transform: uppercase;
+    font-size: 0.7rem;
+    color: #0288d1;
+  }
+
+  .tabla-historial td.celda-productos-lista,
+  .tabla-historial td.celda-flujo {
+    flex-direction: column;
+    align-items: flex-end;
+    padding-top: 12px;
+  }
+
+  .tabla-historial td.celda-productos-lista::before,
+  .tabla-historial td.celda-flujo::before {
+    align-self: flex-start;
+    margin-bottom: 8px;
+  }
+
+  .acciones-botones-historial { margin-top: 10px; }
+}
+
+/* --- VISTA PC --- */
+@media (min-width: 769px) {
+  .tabla-historial-wrapper {
+    background: white;
+    border: 2.5px solid #37474f;
+    box-shadow: 4px 4px 0px #37474f;
+    padding: 20px;
+    border-radius: 22px;
+  }
+  
+  .tabla-historial th {
+    background: #f1fafa;
+    padding: 15px;
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    border-bottom: 3px solid #37474f;
+  }
+
+  .tabla-historial td {
+    padding: 15px 10px; 
+    border-bottom: 2px solid #eee;
+    text-align: center;
+    background: white;
+  }
+
+  .historial-filtros-n { flex-direction: row; }
+  .input-filtro-historial { flex: 2; }
+  .selects-filtros-row { flex: 3; }
+}
+
+/* --- ACCIONES --- */
+.acciones-botones-historial {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+.btn-historial-accion, .btn-historial-eliminar {
+  background: white;
+  border: 2.5px solid #37474f;
+  padding: 8px 12px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 1.1rem;
+  transition: all 0.2s;
+  box-shadow: 2px 2px 0px #37474f;
+}
+
+.btn-historial-accion:hover { transform: translate(-1px, -1px); box-shadow: 3px 3px 0px #37474f; }
+.btn-historial-eliminar:hover { background: #ffebee; }
+.btn-historial-eliminar:active { transform: translate(1px, 1px); box-shadow: 0px 0px 0px; }
+
+/* Animación de entrada */
+.animar-entrada {
+  animation: slideUp 0.4s ease-out;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
