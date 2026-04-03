@@ -1,17 +1,17 @@
 import './styles/App.css';
+import { useAuth } from './hooks/useAuth.js';
+import Header from './components/Header/Header.jsx';
 import FormularioProducto from './components/FormularioProducto';
 import ListaInventario from './components/ListaInventario';
 import SeccionVentas from './components/SeccionVentas';
 import HistorialVentas from './components/HistorialVentas';
 import SeccionGastos from './components/SeccionGastos'; // 1. Importamos el nuevo componente
 import ModuloCambios from './components/ModuloCambios';
-import { useState, useEffect } from 'react';
-import { supabase } from './supabaseClient';
+import { useState } from 'react';
 import Login from './components/Login';
-import Header from './components/Header/Header.jsx';
 
 function App() {
-  const [sesion, setSesion] = useState(null);
+  const { sesion, esAdmin, cerrarSession, cargando } = useAuth();
   const [pestana, setPestana] = useState('ventas');
   const [actualizador, setActualizador] = useState(0);
   
@@ -19,32 +19,15 @@ function App() {
     setActualizador(prev => prev + 1);
   };
 
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSesion(session);
-    });
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSesion(session);
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
-
-  const cerrarSesion = async () => {
-    await supabase.auth.signOut();
-  };
-
-  if (!sesion) {
-    return <Login />;
-  }
-
-  const ADMIN_UID = "ec37610f-8cab-4b24-921b-9d1f626bb321";
-  const esAdmin = sesion?.user.id === ADMIN_UID;
-
+  if (cargando) {return <p>Cargando la App</p>}
+  if (!sesion) {return <Login />;}
   return (
     <div className="dashboard-main">
-      <Header></Header>
+      <Header
+        email={sesion.user.email}
+        esAdmin={esAdmin}
+        onLogout={cerrarSession}
+      />
 
       <nav className="tabs-nav">
         <button 
