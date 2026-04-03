@@ -11,7 +11,7 @@ import { useState } from 'react';
 import Login from './components/Login';
 
 function App() {
-  const { sesion, esAdmin, cerrarSession, cargando } = useAuth();
+  const { sesion, isAdmin, logout, loading } = useAuth();
   const [pestana, setPestana] = useState('ventas');
   const [actualizador, setActualizador] = useState(0);
   
@@ -19,14 +19,14 @@ function App() {
     setActualizador(prev => prev + 1);
   };
 
-  if (cargando) {return <p>Cargando la App</p>}
+  if (loading) {return <p>Cargando la App</p>}
   if (!sesion) {return <Login />;}
   return (
     <div className="dashboard-main">
       <Header
         email={sesion.user.email}
-        esAdmin={esAdmin}
-        onLogout={cerrarSession}
+        isAdmin={isAdmin}
+        onLogout={logout}
       />
 
       <nav className="tabs-nav">
@@ -58,7 +58,7 @@ function App() {
           Inventario
         </button>
         
-        {esAdmin && (
+        {isAdmin && (
           <button 
             className={pestana === 'historial' ? 'active' : ''} 
             onClick={() => setPestana('historial')}
@@ -72,7 +72,7 @@ function App() {
         {pestana === 'inventario' && (
           <div className="layout-grid">
             <FormularioProducto alTerminar={refrescarInventario} />
-            <ListaInventario trigger={actualizador} esAdmin={esAdmin} />
+            <ListaInventario trigger={actualizador} isAdmin={isAdmin} />
           </div>
         )}
 
@@ -98,7 +98,7 @@ function App() {
           />
         )}
         
-        {pestana === 'historial' && esAdmin && <HistorialVentas />}
+        {pestana === 'historial' && isAdmin && <HistorialVentas />}
       </div>
     </div>
   );
