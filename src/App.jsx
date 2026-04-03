@@ -8,6 +8,7 @@ import ModuloCambios from './components/ModuloCambios';
 import { useState, useEffect } from 'react';
 import { supabase } from './supabaseClient';
 import Login from './components/Login';
+import Header from './components/Header/Header.jsx';
 
 function App() {
   const [sesion, setSesion] = useState(null);
@@ -43,13 +44,7 @@ function App() {
 
   return (
     <div className="dashboard-main">
-      <header className="header-admin">
-        <div>
-          <h1>Comercio</h1>
-          <p>Usuario: <strong>{sesion?.user.email}</strong> ({esAdmin ? "Admin" : "Vendedor"})</p>
-        </div>
-        <button className="btn-logout" onClick={cerrarSesion}>Salir</button>
-      </header>
+      <Header></Header>
 
       <nav className="tabs-nav">
         <button 
@@ -66,7 +61,6 @@ function App() {
           Cambios
         </button>
         
-        {/* 2. Botón de Gastos disponible para todos */}
         <button 
           className={pestana === 'gastos' ? 'active' : ''} 
           onClick={() => setPestana('gastos')}
@@ -113,13 +107,10 @@ function App() {
           />
         )}
         
-        {/* 3. Renderizado de la Sección de Gastos */}
         {pestana === 'gastos' && (
           <SeccionGastos 
             sesion={sesion} 
             alTerminar={() => {
-              // Si quieres que pase algo al cargar un gasto, como volver a ventas:
-              // setPestana('ventas'); 
             }}
           />
         )}
