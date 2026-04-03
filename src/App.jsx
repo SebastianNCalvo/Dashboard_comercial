@@ -1,5 +1,6 @@
 import './styles/App.css';
 import { useAuth } from './hooks/useAuth.js';
+import { useState } from 'react';
 import Header from './components/Header/Header.jsx';
 import FormularioProducto from './components/FormularioProducto';
 import ListaInventario from './components/ListaInventario';
@@ -7,11 +8,10 @@ import SeccionVentas from './components/SeccionVentas';
 import HistorialVentas from './components/HistorialVentas';
 import SeccionGastos from './components/SeccionGastos'; // 1. Importamos el nuevo componente
 import ModuloCambios from './components/ModuloCambios';
-import { useState } from 'react';
 import Login from './components/Login';
 
 function App() {
-  const { sesion, isAdmin, logout, loading } = useAuth();
+  const { session, isAdmin, logout, loading } = useAuth();
   const [pestana, setPestana] = useState('ventas');
   const [actualizador, setActualizador] = useState(0);
   
@@ -20,11 +20,11 @@ function App() {
   };
 
   if (loading) {return <p>Cargando la App</p>}
-  if (!sesion) {return <Login />;}
+  if (!session) {return <Login />;}
   return (
     <div className="dashboard-main">
       <Header
-        email={sesion.user.email}
+        email={session.user.email}
         isAdmin={isAdmin}
         onLogout={logout}
       />
@@ -79,20 +79,20 @@ function App() {
         {pestana === 'ventas' && (
           <SeccionVentas 
             alTerminar={refrescarInventario} 
-            sesion={sesion} 
+            session={session} 
           />
         )}
 
         {pestana === 'cambios' && (
           <ModuloCambios 
-            sesion={sesion} 
+            session={session} 
             alTerminar={refrescarInventario} 
           />
         )}
         
         {pestana === 'gastos' && (
           <SeccionGastos 
-            sesion={sesion} 
+            session={session} 
             alTerminar={() => {
             }}
           />

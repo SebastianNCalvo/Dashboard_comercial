@@ -41,23 +41,6 @@ body {
   flex-direction: column;
 }
 
-/* --- HEADER STICKY --- */
-.header-admin {
-  position: sticky;
-  top: 10px; /* Margen respecto al techo del navegador */
-  z-index: 1010;
-  display: flex;
-  flex-direction: column; 
-  gap: 10px;
-  text-align: center;
-  padding: 15px;
-  background: #e1f5fe; 
-  border-radius: 20px;
-  box-shadow: 4px 4px 0px var(--color-borde);
-  border: 2px solid var(--color-borde);
-  margin-bottom: 15px;
-}
-
 /* --- NAVBAR STICKY --- */
 .tabs-nav {
   position: sticky;
