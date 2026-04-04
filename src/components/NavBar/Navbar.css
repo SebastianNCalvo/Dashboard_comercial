@@ -1,0 +1,40 @@
+.tabs-nav {
+  position: sticky;
+  top: 145px; /* Se apoya debajo del header en móvil */
+  z-index: 1005;
+  display: flex;
+  justify-content: flex-start;
+  overflow-x: auto;
+  white-space: nowrap;
+  gap: 8px;
+  background: #e8f5e9; 
+  padding: 10px 15px;
+  border-radius: 50px;
+  border: 2px solid var(--color-borde);
+  margin-bottom: 25px;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.tabs-nav::-webkit-scrollbar { display: none; }
+
+.tabs-nav button {
+  flex: 0 0 auto;
+  padding: 10px 18px;
+  border: 2px solid transparent;
+  background: transparent;
+  color: #546e7a;
+  border-radius: 25px;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+}
+
+.tabs-nav button.active {
+  background-color: white;
+  color: var(--color-acento);
+  border-color: var(--color-borde);
+  box-shadow: 0 3px 0px var(--color-borde);
+  transform: translateY(-2px);
+}

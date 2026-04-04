@@ -2,6 +2,7 @@ import './styles/App.css';
 import { useAuth } from './hooks/useAuth.js';
 import { useState } from 'react';
 import Header from './components/Header/Header.jsx';
+import NavBar from './components/NavBar/NavBar.jsx';
 import FormularioProducto from './components/FormularioProducto';
 import ListaInventario from './components/ListaInventario';
 import SeccionVentas from './components/SeccionVentas';
@@ -12,7 +13,7 @@ import Login from './components/Login';
 
 function App() {
   const { session, isAdmin, logout, loading } = useAuth();
-  const [pestana, setPestana] = useState('ventas');
+  const [activeTab, setActiveTab] = useState('ventas');
   const [actualizador, setActualizador] = useState(0);
   
   const refrescarInventario = () => {
@@ -29,68 +30,35 @@ function App() {
         onLogout={logout}
       />
 
-      <nav className="tabs-nav">
-        <button 
-          className={pestana === 'ventas' ? 'active' : ''} 
-          onClick={() => setPestana('ventas')}
-        >
-          Ventas
-        </button>
-
-        <button 
-          className={pestana === 'cambios' ? 'active' : ''} 
-          onClick={() => setPestana('cambios')}
-        >
-          Cambios
-        </button>
-        
-        <button 
-          className={pestana === 'gastos' ? 'active' : ''} 
-          onClick={() => setPestana('gastos')}
-        >
-          Gastos
-        </button>
-
-        <button 
-          className={pestana === 'inventario' ? 'active' : ''} 
-          onClick={() => setPestana('inventario')}
-        >
-          Inventario
-        </button>
-        
-        {isAdmin && (
-          <button 
-            className={pestana === 'historial' ? 'active' : ''} 
-            onClick={() => setPestana('historial')}
-          >
-            Historial
-          </button>
-        )}
-      </nav>
+      <NavBar
+        activeTab={activeTab}
+        onChangeTab={setActiveTab}
+        isAdmin={isAdmin}
+      />
 
       <div className="tab-content">
-        {pestana === 'inventario' && (
+        {activeTab === 'inventario' && (
           <div className="layout-grid">
             <FormularioProducto alTerminar={refrescarInventario} />
             <ListaInventario trigger={actualizador} isAdmin={isAdmin} />
           </div>
         )}
 
-        {pestana === 'ventas' && (
+        {activeTab === 'ventas' && (
           <SeccionVentas 
             alTerminar={refrescarInventario} 
             session={session} 
           />
         )}
 
-        {pestana === 'cambios' && (
+        {activeTab === 'cambios' && (
           <ModuloCambios 
             session={session} 
             alTerminar={refrescarInventario} 
           />
         )}
         
-        {pestana === 'gastos' && (
+        {activeTab === 'gastos' && (
           <SeccionGastos 
             session={session} 
             alTerminar={() => {
@@ -98,7 +66,7 @@ function App() {
           />
         )}
         
-        {pestana === 'historial' && isAdmin && <HistorialVentas />}
+        {activeTab === 'historial' && isAdmin && <HistorialVentas />}
       </div>
     </div>
   );
