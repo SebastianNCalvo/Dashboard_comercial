@@ -21,9 +21,21 @@
   color: var(--color-acento);
 }
 
+.header-admin h1 {
+  margin: 0;
+  color: var(--color-acento);
+  font-size: 1.2rem;
+  font-weight: 800;
+}
+
 .btn-logout {
-  background-color: var(--color-secundario);
+  background-color: #fff9c4;
   color: var(--color-peligro);
   border: 2px solid var(--color-borde);
-  /* etc... */
+  padding: 8px 15px;
+  border-radius: 10px;
+  font-weight: 800;
+  font-size: 0.75rem;
+  cursor: pointer;
+  box-shadow: 2px 2px 0px var(--color-borde);
 }

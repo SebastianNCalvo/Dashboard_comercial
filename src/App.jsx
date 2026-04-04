@@ -20,43 +20,38 @@ function App() {
     setActualizador(prev => prev + 1);
   };
 
-  if (loading) {return <p>Cargando la App</p>}
-  if (!session) {return <Login />;}
+  if (loading) {return <p>Cargando la App</p>};
+  if (!session) {return <Login />;};
+
   return (
     <div className="dashboard-main">
       <Header
         email={session.user.email}
         isAdmin={isAdmin}
         onLogout={logout}
-      />
+      />;
 
       <NavBar
         activeTab={activeTab}
         onChangeTab={setActiveTab}
         isAdmin={isAdmin}
-      />
+      />;
 
       <div className="tab-content">
-        {activeTab === 'inventario' && (
-          <div className="layout-grid">
-            <FormularioProducto alTerminar={refrescarInventario} />
-            <ListaInventario trigger={actualizador} isAdmin={isAdmin} />
-          </div>
-        )}
-
+        
         {activeTab === 'ventas' && (
           <SeccionVentas 
-            alTerminar={refrescarInventario} 
             session={session} 
+            alTerminar={refrescarInventario} 
           />
-        )}
+        )};
 
         {activeTab === 'cambios' && (
           <ModuloCambios 
             session={session} 
             alTerminar={refrescarInventario} 
           />
-        )}
+        )};
         
         {activeTab === 'gastos' && (
           <SeccionGastos 
@@ -64,9 +59,16 @@ function App() {
             alTerminar={() => {
             }}
           />
-        )}
+        )};
+
+        {activeTab === 'inventario' && (
+          <div className="layout-grid">
+            <FormularioProducto alTerminar={refrescarInventario} />
+            <ListaInventario trigger={actualizador} isAdmin={isAdmin} />
+          </div>
+        )};
         
-        {activeTab === 'historial' && isAdmin && <HistorialVentas />}
+        {activeTab === 'historial' && isAdmin && <HistorialVentas />};
       </div>
     </div>
   );

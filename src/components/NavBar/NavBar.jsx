@@ -3,6 +3,7 @@ import './NavBar.css'
 export default function NavBar({activeTab, onChangeTab, isAdmin}){
     return(
         <nav className="tabs-nav">
+
             <button 
             className={activeTab === 'ventas' ? 'active' : ''} 
             onClick={() => onChangeTab('ventas')}
