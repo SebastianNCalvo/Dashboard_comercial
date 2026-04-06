@@ -5,7 +5,7 @@ import Header from './components/Header/Header.jsx';
 import NavBar from './components/NavBar/NavBar.jsx';
 import FormularioProducto from './components/FormularioProducto';
 import ListaInventario from './components/ListaInventario';
-import SeccionVentas from './components/SeccionVentas';
+import SeccionVentas from './components/Ventas/SeccionVentas.jsx';
 import HistorialVentas from './components/HistorialVentas';
 import SeccionGastos from './components/SeccionGastos'; // 1. Importamos el nuevo componente
 import ModuloCambios from './components/ModuloCambios';

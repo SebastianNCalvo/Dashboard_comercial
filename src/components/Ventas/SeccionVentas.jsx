@@ -1,7 +1,11 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '../supabaseClient';
-import { generarFacturaPDF } from './GeneradorPDF';
-import '../styles/Ventas.css';
+import { supabase } from '../../supabaseClient';
+import { generarFacturaPDF } from '../GeneradorPDF';
+import { generarCodigoVenta } from './VentaUtils';
+import './Ventas.css';
+import ProductForm from './ProductForm';
+import CartTable from './CartTable';
+import CartFooter from './CartFooter';
 
 export default function SeccionVentas({ alTerminar, sesion }) {
   const [productos, setProductos] = useState([]);
@@ -11,17 +15,9 @@ export default function SeccionVentas({ alTerminar, sesion }) {
   const [metodoPago, setMetodoPago] = useState('Efectivo');
   const [filtroProducto, setFiltroProducto] = useState('');
 
-  // --- ESTADOS PARA NOTA DE CRÉDITO ---
   const [inputNC, setInputNC] = useState('');
   const [notaAplicada, setNotaAplicada] = useState(null); 
   const [buscandoNC, setBuscandoNC] = useState(false);
-
-  const generarCodigoVenta = () => {
-    const fecha = new Date();
-    const diaMes = `${fecha.getDate()}${fecha.getMonth() + 1}`;
-    const randomStr = Math.random().toString(36).substring(2, 6).toUpperCase();
-    return `MB-${diaMes}-${randomStr}`;
-  };
 
   const traerProductos = async () => {
     const { data } = await supabase
@@ -125,7 +121,6 @@ export default function SeccionVentas({ alTerminar, sesion }) {
     const nuevoCodigo = generarCodigoVenta();
 
     try {
-      // 1. Insertar Cabecera
       const { data: cabecera, error: errorCabecera } = await supabase
         .from('ventas_cabecera')
         .insert([{ 
@@ -138,12 +133,11 @@ export default function SeccionVentas({ alTerminar, sesion }) {
 
       if (errorCabecera) throw errorCabecera;
 
-      // 2. MARCAR NOTA DE CRÉDITO COMO USADA
       if (notaAplicada) {
         const { error: errorNC } = await supabase
           .from('notas_credito')
           .update({ 
-            estado: 'usado', // Corregido según restricción de Supabase
+            estado: 'usado',
             venta_destino_id: cabecera.id 
           })
           .eq('id', notaAplicada.id);
@@ -151,7 +145,6 @@ export default function SeccionVentas({ alTerminar, sesion }) {
         if (errorNC) throw errorNC;
       }
 
-      // 3. Insertar Detalle
       const registrosDetalle = carrito.map(item => ({
         venta_id: cabecera.id,
         producto_id: item.id,
@@ -161,14 +154,12 @@ export default function SeccionVentas({ alTerminar, sesion }) {
       const { error: errorDetalle } = await supabase.from('ventas_detalle').insert(registrosDetalle);
       if (errorDetalle) throw errorDetalle;
 
-      // 4. Actualizar Stock
       const promesasStock = carrito.map(async (item) => {
         const { data: prodActual } = await supabase.from('productos').select('stock').eq('id', item.id).single();
         return supabase.from('productos').update({ stock: (prodActual?.stock || 0) - item.cantidadEnCarrito }).eq('id', item.id);
       });
       await Promise.all(promesasStock);
 
-      // 5. PDF y Limpieza
       generarFacturaPDF({
         codigo: nuevoCodigo,
         carrito: [...carrito],
@@ -194,96 +185,49 @@ export default function SeccionVentas({ alTerminar, sesion }) {
   return (
     <div className="ventas-container">
       <h3>Punto de Venta 🛒</h3>
-      
-      <form className="ventas-form" onSubmit={agregarAlCarrito}>
-        <div className="input-group">
-          <label>Buscar Producto:</label>
-          <input 
-            type="text"
-            placeholder="Escriba nombre del producto..."
-            value={filtroProducto}
-            onChange={(e) => setFiltroProducto(e.target.value)}
-          />
-        </div>
 
-        <select value={idSeleccionado} onChange={(e) => setIdSeleccionado(e.target.value)} required>
-          <option value="">Seleccionar Producto...</option>
-          {productos.filter(p => p.nombre.toLowerCase().includes(filtroProducto.toLowerCase())).map(p => (
-            <option key={p.id} value={p.id}>{p.nombre} - Talle: {p.talle} (${p.precio})</option>
-          ))}
-        </select>
-
-        <div className="input-group">
-          <label>Cantidad:</label>
-          <input type="number" min="1" value={cantidad} onChange={(e) => setCantidad(e.target.value)} required />
-        </div>
-        <button type="submit" className="btn-agregar">Añadir al carrito</button>
-      </form>
+      <ProductForm
+        productos={productos}
+        filtroProducto={filtroProducto}
+        setFiltroProducto={setFiltroProducto}
+        idSeleccionado={idSeleccionado}
+        setIdSeleccionado={setIdSeleccionado}
+        cantidad={cantidad}
+        setCantidad={setCantidad}
+        agregarAlCarrito={agregarAlCarrito}
+      />
 
       {carrito.length > 0 && (
         <div className="carrito-resumen">
           <h4>Detalle de la Orden</h4>
-          <table className="tabla-carrito">
-            <tbody>
-              {carrito.map(item => (
-                <tr key={item.id}>
-                  <td>{item.nombre} (T{item.talle})</td>
-                  <td>${item.precio * item.cantidadEnCarrito}</td>
-                  <td>
-                    <div className="controles-cantidad">
-                      <button className="btn-mini" onClick={() => disminuirCantidad(item.id)}>-</button>
-                      <span className="cant-numero">{item.cantidadEnCarrito}</span>
-                      <button className="btn-mini" onClick={() => aumentarCantidad(item.id)}>+</button>
-                    </div>
-                  </td>
-                  <td><button onClick={() => eliminarDelCarrito(item.id)} className="btn-borrar-item">×</button></td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
 
-          <div className="seccion-canje-nc">
-            <label>¿Tiene Nota de Crédito?</label>
-            <div className="nc-input-group">
-              <input 
-                type="text" 
-                placeholder="Código NC (ej: NC-1234)" 
-                value={inputNC}
-                onChange={(e) => setInputNC(e.target.value)}
-                disabled={!!notaAplicada}
-              />
-              {!notaAplicada ? (
-                <button onClick={validarNotaCredito} disabled={buscandoNC} className="btn-aplicar-nc">
-                  {buscandoNC ? '...' : 'Aplicar'}
-                </button>
-              ) : (
-                <button onClick={quitarNota} className="btn-quitar-nc">Quitar</button>
-              )}
-            </div>
-          </div>
+          <CartTable
+            carrito={carrito}
+            aumentarCantidad={aumentarCantidad}
+            disminuirCantidad={disminuirCantidad}
+            eliminarDelCarrito={eliminarDelCarrito}
+          />
 
-          <div className="carrito-footer">
-            <div className="totales-desglose">
-                <p>Subtotal: <span>${subtotalVenta}</span></p>
-                {notaAplicada && <p className="descuento-nc">Nota de Crédito: <span>-${notaAplicada.monto}</span></p>}
-                <p className="total-texto">Total a Pagar: <span>${totalConDescuento}</span></p>
-            </div>
+          <CartFooter
+            // Datos de la Nota de Crédito
+            inputNC={inputNC}
+            setInputNC={setInputNC}
+            notaAplicada={notaAplicada}
+            buscandoNC={buscandoNC}
+            validarNotaCredito={validarNotaCredito}
+            quitarNota={quitarNota}
             
-            <div className="pago-selector">
-              <label>Método de Pago Restante:</label>
-              <select value={metodoPago} onChange={(e) => setMetodoPago(e.target.value)} className="select-pago">
-                <option value="Efectivo">💵 Efectivo</option>
-                <option value="Transferencia">📱 Transferencia</option>
-                <option value="Débito">💳 Débito</option>
-                <option value="Crédito">💳 Crédito</option>
-              </select>
-            </div>
+            // Totales y Pago
+            subtotalVenta={subtotalVenta}
+            totalConDescuento={totalConDescuento}
+            metodoPago={metodoPago}
+            setMetodoPago={setMetodoPago}
+            
+            // Acciones finales
+            onVaciar={() => { setCarrito([]); setNotaAplicada(null); }}
+            onFinalizar={finalizarCompra}
+          />
 
-            <div className="acciones-finales">
-              <button onClick={() => { setCarrito([]); setNotaAplicada(null); }} className="btn-vaciar">Cancelar</button>
-              <button onClick={finalizarCompra} className="btn-finalizar">Confirmar Compra</button>
-            </div>
-          </div>
         </div>
       )}
     </div>
